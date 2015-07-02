@@ -27,7 +27,7 @@ class MetadataModel:
             for mc in node.metadataCondition:
                 if(i > 0):
                     sql = sql + " AND "
-                sql = sql + mc[0] + mc[1] + "'" + mc[2] + "'"
+                sql = sql + mc
                 i = i + 1
 
             for row in self.cur.execute(sql):
@@ -75,7 +75,7 @@ class MetadataModel:
 
         sizeAssembled = self.__getAssembledSize(vars)
 
-        return CorpusComposition(vars, sizeAssembled, cathegorySizes, self.numTexts)
+        return CorpusComposition(vars, sizeAssembled, cathegorySizes, self.b, sum(vars))
 
 
     def __getAssembledSize(self, results):

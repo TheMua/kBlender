@@ -117,7 +117,7 @@ class CathegoryTree:
         for c in mc:
             if(i > 0):
                 sql = sql + " AND "
-            sql = sql + c[0] + c[1] + "'" + c[2] + "'"
+            sql = sql + c
             i = i + 1
 
         self.cur.execute(sql)
