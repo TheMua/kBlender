@@ -43,7 +43,7 @@ class MetadataModel:
     def solve(self):
 
         if(sum(self.b) == 0):
-            return CorpusComposition(None, 0, None, 0)
+            return CorpusComposition(None, 0, None, [], 0)
 
         x_min = 0
         x_max = 1
