@@ -41,6 +41,10 @@ class MetadataModel:
 
 
     def solve(self):
+
+        if(sum(self.b) == 0):
+            return CorpusComposition(None, 0, None, 0)
+
         x_min = 0
         x_max = 1
         numConditions = len(self.b)
@@ -65,13 +69,13 @@ class MetadataModel:
             vars[i] = np.round(v.varValue)
 
         cathegorySizes = []
-        for c in range(0, self.cTree.numCathegories):
+        for c in range(0, self.cTree.numCathegories-1):
             cSize = self.__getCathegorySize(vars, c)
             cathegorySizes.append(cSize)
 
         sizeAssembled = self.__getAssembledSize(vars)
 
-        return CorpusComposition(vars, sizeAssembled, cathegorySizes)
+        return CorpusComposition(vars, sizeAssembled, cathegorySizes, self.numTexts)
 
 
     def __getAssembledSize(self, results):

@@ -93,7 +93,6 @@ class CathegoryTree:
                 i = i + 1
 
 
-
     def initializeBounds(self):
 
         for i in range(1,len(self.cathegoryList)):
@@ -122,5 +121,9 @@ class CathegoryTree:
             i = i + 1
 
         self.cur.execute(sql)
+        size = self.cur.fetchone()[0]
 
-        return self.cur.fetchone()[0]
+        if(size == None):
+            size = 0
+
+        return size
