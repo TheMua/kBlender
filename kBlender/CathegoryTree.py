@@ -3,12 +3,15 @@ import numpy as np
 import sqlite3
 
 class CathegoryTree:
-    def __init__(self, cathegoryList, metaDB, tableName):
+    def __init__(self, cathegoryList, metaDB, tableName, corpusMaxSize):
         self.cathegoryList = cathegoryList
         self.numCathegories = len(cathegoryList)
         self.metaDB = metaDB
         self.tableName = tableName
+        self.corpusMaxSize = corpusMaxSize
         self.rootNode = CathegoryTreeNode(self.cathegoryList[0][0], self.cathegoryList[0][1], self.cathegoryList[0][2], self.cathegoryList[0][3])
+        self.connection = sqlite3.connect(self.metaDB)
+        self.cur = self.connection.cursor()
 
         self.build()
         self.initializeBounds()
@@ -100,18 +103,14 @@ class CathegoryTree:
             categorySize = self.__getCategorySize(node.metadataCondition)
             node.size = categorySize
 
-        self.connection = sqlite3.connect(self.metaDB)
-        self.cur = self.connection.cursor()
         sql = 'SELECT SUM(wordcount) FROM item '
         self.cur.execute(sql)
-        wholeSize = self.cur.fetchone()[0]
-        self.rootNode.size = wholeSize
+        maxAvailable = self.cur.fetchone()[0]
 
+        self.rootNode.size = min(self.corpusMaxSize, maxAvailable)
         self.computeSizes(self.rootNode)
 
     def __getCategorySize(self, mc):
-        self.connection = sqlite3.connect(self.metaDB)
-        self.cur = self.connection.cursor()
         sql = 'SELECT SUM(wordcount) FROM item WHERE '
         i = 0
         for c in mc:

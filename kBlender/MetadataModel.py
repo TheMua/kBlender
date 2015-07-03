@@ -9,19 +9,19 @@ class MetadataModel:
         self.cTree = cathegoryTree
         self.connection = sqlite3.connect(self.cTree.metaDB)
         self.cur = self.connection.cursor()
-        self.cur.execute('SELECT COUNT(*) FROM '+self.cTree.tableName)
+        self.cur.execute("SELECT COUNT(*) FROM %s" % self.cTree.tableName)
         self.numTexts = self.cur.fetchone()[0]
         self.b = [0]*(self.cTree.numCathegories-1)
         self.A = np.zeros((self.cTree.numCathegories,self.numTexts))
         self.__initAb(self.cTree.rootNode)
         self.textSizes = []
 
-        for row in self.cur.execute('SELECT wordcount FROM item'):
+        for row in self.cur.execute("SELECT wordcount FROM item"):
             self.textSizes.append(row[0])
 
 
     def __initAb(self,node):
-        sql = "SELECT id, wordcount FROM " + self.cTree.tableName + " WHERE ";
+        sql = "SELECT id, wordcount FROM %s WHERE " % self.cTree.tableName;
         if(node.metadataCondition != None):
             i = 0
             for mc in node.metadataCondition:
