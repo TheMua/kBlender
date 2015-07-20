@@ -66,7 +66,7 @@ class MetadataModel:
             if(v.name == "__dummy"):
                 continue
             i = int(v.name[2:len(v.name)])
-            vars[i] = np.round(v.varValue)
+            vars[i] = np.round(v.varValue, decimals=0)
 
         cathegorySizes = []
         for c in range(0, self.cTree.numCathegories-1):

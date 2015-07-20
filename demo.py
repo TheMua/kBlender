@@ -2,11 +2,14 @@
 from __future__ import division
 from kBlender.CathegoryTree import CathegoryTree
 from kBlender.MetadataModel import MetadataModel
+from shutil import copyfile
 import time
+import sqlite3
 
 start = time.time()
 
 metaDB = '/opt/kontext-data/metadata/syn.db'
+copyfile(metaDB, 'results.db')
 tableName = 'item'
 corpusMaxSize = 20000000
 
@@ -16,13 +19,13 @@ cathegoryList = [
     [2, 0, 1/2, "opus_rokvyd >= 2000"],
 
     [3, 1, 1/2, "opus_txtype_group == 'odborná'"],
-    [4, 1, 1/2, "opus_txtype_group == 'beletrie'"]
+    [4, 1, 1/2, "opus_txtype_group == 'beletrie'"],
+    [5, 1, 0, "opus_txtype_group <> 'beletrie' AND opus_txtype_group <> 'odborná' "]
 
 ]
 
 cathegoryTree = CathegoryTree(cathegoryList, metaDB, tableName, corpusMaxSize)
 mm = MetadataModel(cathegoryTree)
-
 
 print("Executing the solver...")
 
@@ -35,11 +38,17 @@ if(corpusComposition.sizeAssembled > 0):
     print("Cathegory sizes: \t " + str(corpusComposition.cathegorySizes))
     print("Used bounds: \t\t " + str(corpusComposition.usedBounds))
 
-    i = 1
-    f = open('output.txt', 'w+')
-    for v in corpusComposition.vars:
-        f.write("%d;%d \n" % (i,v))
-        i = i + 1
+    with sqlite3.connect('results.db') as con:
+        cur = con.cursor()
+        i = 1
+        f = open('output.txt', 'w+')
+        for v in corpusComposition.vars:
+            f.write("%d;%d \n" % (i,v))
+
+            if(v == 0):
+                cur.execute("DELETE FROM %s WHERE id = %d;" % (cathegoryTree.tableName, i))
+
+            i = i + 1
 
 else:
     print("Corpus composition failed. One of the provided conditions generates no data. ")
