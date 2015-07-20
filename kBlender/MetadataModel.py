@@ -5,6 +5,11 @@ from kBlender.CorpusComposition import CorpusComposition
 
 
 class MetadataModel:
+    """This class represents the linear optimization model for given cathegoryTree.
+
+    :cathegoryTree: a tree holding the user input
+    """
+
     def __init__(self, cathegoryTree):
         self.cTree = cathegoryTree
         self.connection = sqlite3.connect(self.cTree.metaDB)
@@ -21,6 +26,14 @@ class MetadataModel:
 
 
     def __initAb(self,node):
+        """
+        Initialization method for coefficient matrix (A) and vector of bounds (b)
+        Recursively traverses all nodes of given cathegoryTree starting from its root.
+        Each node is processed in order to generate one inequality constraint.
+
+        :param node: currently processed node of the cathegoryTree
+        """
+
         sql = "SELECT id, wordcount FROM %s WHERE " % self.cTree.tableName;
         if(node.metadataCondition != None):
             i = 0
@@ -41,6 +54,11 @@ class MetadataModel:
 
 
     def solve(self):
+        """
+        A method that converts the matrix notation of LP model to format used by PULP library and solves it
+
+        :return: object representation of resulting composition
+        """
 
         if(sum(self.b) == 0):
             return CorpusComposition(None, 0, None, [], 0)

@@ -3,6 +3,15 @@ import numpy as np
 import sqlite3
 
 class CathegoryTree:
+    """
+    Cathegory tree represents the user required corpus structure
+
+    :cathegoryList: A list of cathegories from which the user wants to generate the corpus including the requested ratios and links to their parent cathegories
+    :metaDB: Path to file containing the Sqlite3 metadata database.
+    :tableName: Name of the table in metaDB that holds the metadata
+    :corpusMaxSize: Maximal size of resulting corpora in words
+
+    """
     def __init__(self, cathegoryList, metaDB, tableName, corpusMaxSize):
         self.cathegoryList = cathegoryList
         self.numCathegories = len(cathegoryList)
@@ -111,6 +120,12 @@ class CathegoryTree:
         self.computeSizes(self.rootNode)
 
     def __getCategorySize(self, mc):
+        """
+        This method only computes the maximal available size of cathegory described by provided list of metadata conditions
+
+        :mc: A list of metadata sql conditions that determines if texts belongs to this cathegory
+        """
+
         sql = 'SELECT SUM(wordcount) FROM item WHERE '
         i = 0
         for c in mc:

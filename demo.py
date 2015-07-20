@@ -11,7 +11,7 @@ start = time.time()
 metaDB = '/opt/kontext-data/metadata/syn.db'
 copyfile(metaDB, 'results.db')
 tableName = 'item'
-corpusMaxSize = 20000000
+corpusMaxSize = 500000000
 
 cathegoryList = [
     [0, None, 1, None],
