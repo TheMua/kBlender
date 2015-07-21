@@ -6,6 +6,5 @@ class CathegoryTreeNode:
         self.metadataCondition = metadataCondition
         self.size = None
         self.computedBounds = None
-
         self.childs = []
         

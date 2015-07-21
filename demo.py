@@ -20,11 +20,14 @@ cathegoryList = [
 
     [3, 1, 1/2, "opus_txtype_group == 'odborná'"],
     [4, 1, 1/2, "opus_txtype_group == 'beletrie'"],
-    [5, 1, 0, "opus_txtype_group <> 'beletrie' AND opus_txtype_group <> 'odborná' "]
+
+    [5, 2, 1/2, "opus_txtype_group == 'odborná'"],
+    [6, 2, 1/2, "opus_txtype_group == 'beletrie'"]
 
 ]
 
 cathegoryTree = CathegoryTree(cathegoryList, metaDB, tableName, corpusMaxSize)
+
 mm = MetadataModel(cathegoryTree)
 
 print("Executing the solver...")

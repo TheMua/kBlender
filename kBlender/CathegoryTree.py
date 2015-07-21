@@ -1,12 +1,14 @@
 from kBlender.CathegoryTreeNode import CathegoryTreeNode
 import numpy as np
 import sqlite3
+import copy
 
 class CathegoryTree:
     """
     Cathegory tree represents the user required corpus structure
 
-    :cathegoryList: A list of cathegories from which the user wants to generate the corpus including the requested ratios and links to their parent cathegories
+    :cathegoryList: A list of cathegories from which the user wants to generate the corpus including the requested
+     ratios and links to their parent cathegories
     :metaDB: Path to file containing the Sqlite3 metadata database.
     :tableName: Name of the table in metaDB that holds the metadata
     :corpusMaxSize: Maximal size of resulting corpora in words
@@ -22,11 +24,41 @@ class CathegoryTree:
         self.connection = sqlite3.connect(self.metaDB)
         self.cur = self.connection.cursor()
 
+        self.__addVirtualCats()
         self.build()
         self.initializeBounds()
 
+    def __addVirtualCats(self):
+        updatedList = copy.deepcopy(self.cathegoryList)
+        catsUpdated = [0]*self.numCathegories
+        for cat in self.cathegoryList:
+            parId = cat[1]
+            if(parId > 0):
+                i = 0
+                mdcstr = ""
+                for otherCat in self.cathegoryList:
+                    if(otherCat[1] == parId and parId > 0):
+                        cond = self.__inverseMDCond(otherCat[3])
+                        if(i > 0):
+                            mdcstr = mdcstr + " AND "
+
+                        mdcstr = mdcstr + cond
+                        i = i + 1
+                if(catsUpdated[parId] != 1):
+                    updatedList.append([self.numCathegories, parId, 0, mdcstr])
+                    catsUpdated[parId] = 1
+                    self.numCathegories = self.numCathegories + 1
+                    self.cathegoryList = updatedList
+
+
+    def __inverseMDCond(self, mdcstr):
+        repls = (('==', '<>'), ('<=', '>='), ('>=', '<='))
+        mdcstr = reduce(lambda a, kv: a.replace(*kv), repls, mdcstr)
+        return mdcstr
+
+
     def build(self):
-        for i in range(1,len(self.cathegoryList)):
+        for i in range(1,self.numCathegories):
             cat = self.cathegoryList[i]
             nodeId = cat[0]
             parentId = cat[1]
